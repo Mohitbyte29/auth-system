@@ -9,7 +9,7 @@ const SignupLogin = ({ onSubmit, error }) => {
       <div className="form-container sign-up-container">
         <form>
           <h1>Create Account</h1>
-
+          
           <div className="social-container">
             <a href="#" className="social"><i className="fab fa-facebook-f" /></a>
             <a href="#" className="social"><i className="fab fa-google-plus-g" /></a>
