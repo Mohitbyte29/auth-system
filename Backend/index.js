@@ -5,6 +5,7 @@ import cors from "cors"
 import connectDB from "./config/db.js"
 import bodyParser from "body-parser"
 import { authRouter } from "./routes/auth.routes.js"
+import { productRouter } from "./routes/product.routes.js"
 
 dotenv.config()
 
@@ -20,6 +21,7 @@ app.use(cors({
 }))
 
 app.use(authRouter);
+app.use(productRouter);
 
 app.get('/', (req, res) => {
     res.send('Hello');
