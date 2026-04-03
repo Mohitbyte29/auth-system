@@ -34,7 +34,7 @@ export const login = async(req, res) => {
         }
         const isPasswordEqual = await argon.verify(user.password, password);
         if(!isPasswordEqual){
-            return res.status(400).json({message: errMessage, success: false});
+            return res.status(400).json({error: errMessage, success: false});
         }
         const jwtToken = jwt.sign({
             email: user.email,
@@ -51,7 +51,7 @@ export const login = async(req, res) => {
     } catch(err){
         console.log(err);
         res.status(500)
-        .json({message: "Internal Server Error",
+        .json({error: "Internal Server Error",
             success: false
         })
     }

@@ -1,7 +1,10 @@
 import axios from "axios";
 import { useState } from "react";
+import { handleError, handleSuccess } from "../utils.js";
+import { useNavigate } from "react-router-dom";
 
-const SignupLogin = ({ onSubmit, error }) => {
+const SignupLogin = () => {
+  const navigate = useNavigate();
   const [isActive, setIsActive] = useState(false);
   const [loginInfo, setloginInfo] = useState({
     email: '',
@@ -18,9 +21,8 @@ const SignupLogin = ({ onSubmit, error }) => {
     const {name, value} = e.target;
     console.log(name, value);
     const copyLoginInfo = {...loginInfo};
-    copyLoginInfo[name] = value
+    copyLoginInfo[name] = value;
     setloginInfo(copyLoginInfo)
-    console.log("loginInfo -> ", loginInfo)
   }
 
   const handleSignupChange = (e) => {
@@ -29,14 +31,13 @@ const SignupLogin = ({ onSubmit, error }) => {
     const copySignupInfo = {...signupInfo};
     copySignupInfo[name] = value
     setsignupInfo(copySignupInfo)
-    console.log("signupInfo -> ", signupInfo)
   }
 
   const handleSignup = async(e) => {
     e.preventDefault();
     const {name, email, password} = signupInfo;
     if(!name || !email || !password){
-         alert("Field is missing");
+          handleError(err);
          return;
     }
     try{
@@ -45,10 +46,18 @@ const SignupLogin = ({ onSubmit, error }) => {
         email,
         password
       })
-      console.log(response)
-    } catch(err){
-      console.log(err)
-      // alert("Field is missing");
+      const { success, message, error } = response.data || {};
+      if(success){
+        handleSuccess(message || "Signup successful");
+        setTimeout(() => {
+          navigate('/home')
+        }, 1000)
+      }
+      console.log(response.data)
+    }  catch (err) {
+  const { status, data } = err.response || {};
+  console.log("status:", status);
+  console.log("error:", data); 
     }
   }
 
@@ -59,14 +68,29 @@ const SignupLogin = ({ onSubmit, error }) => {
          alert("Field is missing");
          return;
     }
+    
     try{
       const response = await axios.post("http://localhost:4000/auth/login", {
         email,
         password
       })
+      const { success, message, jwtToken, name, error } = response.data || {};
+      if(success){
+        handleSuccess(message || "Signup successful");
+        localStorage.setItem('token', jwtToken);
+        localStorage.setItem('loggedInUser', name);
+        setTimeout(() => {
+          navigate('/home')
+        }, 1000)
+      } else if(error) {
+        const details = error?.details[0].message;
+        handleError(details)
+      } else if(!success){
+        handleError(error);
+      }
       console.log(response)
     } catch(err){
-      console.log(err)
+      handleError(err);
     }
   }
 
@@ -136,7 +160,6 @@ const SignupLogin = ({ onSubmit, error }) => {
               Sign Up
             </button>
           </div>
-
         </div>
       </div>
 
